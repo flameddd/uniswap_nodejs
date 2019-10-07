@@ -351,3 +351,7 @@ Error: Error: Error:  *** Deployment Failed ***
 ### 20191007
 １３：５４ 持續寫 readme 吧  
 邊寫邊釐清原理  
+
+１５：１０ commit and push to github  
+花費 2 週實現此 DEMO  
+- https://github.com/flameddd/uniswap_nodejs
