@@ -15,11 +15,18 @@
     "eslint": "^6.1.0",
     "husky": "^3.0.5",
     "lint-staged": "^9.3.0",
-    "prettier-eslint-cli": "^5.0.0"
+    "openzeppelin-solidity": "^2.3.0",
+    "prettier-eslint-cli": "^5.0.0",
+    "truffle-hdwallet-provider": "^1.0.17"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^2.3.0",
+    "@uniswap/sdk": "^1.0.0-beta.4",
+    "dotenv": "^8.1.0",
+    "ethereumjs-tx": "^2.1.1",
     "web3": "^1.2.1"
   },
+  "eslintIgnore": ["/contracts/*.sol", "/migrations/*.js"],
   "lint-staged": {
     "**/*.js": [
       "eslint --fix",

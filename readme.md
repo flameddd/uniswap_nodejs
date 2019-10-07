@@ -1,37 +1,109 @@
-## 探索方向
+## about this DEMO
+- nodejs 去串 「uniswap（contract）」 把 ETH 換成「某一種 token」
 
-1. nodejs 去串 「uniswap（contract）」 把 ETH 換成「某一種 token」
-2. nodejs 去串「Compound（contract）」把「某一種token」「借/收」出去
+### ref: The Developer’s Guide to Uniswap
+- https://blog.oceanprotocol.com/the-developers-guide-to-uniswap-48fcf6e9ee1e
+- https://github.com/oceanprotocol/Nautilus/tree/master/3-uniswap
 
-### prerequire
-- `geth`
+### 其他
+- uniswap 的 testnet 為 rinkeby
+- 利用 infura 去連 rinkeby
 
-### 啟動
-用 `geth` 去連 `ropsten` testnet (**light** mode)
-- https://github.com/ethereum/ropsten
-
+### 執行方法
+#### 先下載 repo、install  
 ```
-geth --testnet --syncmode light --bootnodes "enode://6332792c4a00e3e4ee0926ed89e0d27ef985424d97b6a45bf0f23e51f0dcb5e66b875777506458aea7af6f9e4ffb69f43f3778ee73c81ed9d34c51c4b16b0b0f@52.232.243.152:30303,enode://94c15d1b9e2fe7ce56e458b9a3b672ef11894ddedd0c6f247e0f1d3487f52b66208fb4aeb8179fce6e3a749ea93ed147c37976d67af557508d199d9594c35f09@192.81.208.223:30303" console
+git clone ＿＿＿＿＿＿
+cd uniswap_nodejs
+npm install
 ```
 
-console 會顯示相關資訓，最後面幾行查看 `ipc` 位置，如
-- `/Users/flameddd/Library/Ethereum/testnet/geth.ipc`
+#### 申請 infura（有了就不用申請了）
+- https://infura.io/dashboard
+- 建立屬於自己的 project
+- 記下 `PROJECT ID`
 
-接著寫到 `src/index.js` 裡面
+#### 建立環境變數 
+- 根目錄底下建立 `.env` 檔案（可以複製 `.env.template` 出來改檔名）
+- 填上 `INFURA_RINKEBY_KEY`（上面提到的 PROJECTID）
+- 填上 `拿來測試用的 account 的私鑰`  
+
+（`.env` 不會被 git 紀錄，也不會被 commit 出去）
+
+#### 部署 test 用的 `erc20 contract`
+此 repo 已經有一個了 (/contracts/OceanToken.sol)，所以直接 compile 吧  
+```
+truffle compile
+truffle create migration deploy_contracts
+```
+
+然後部署文件(`/migrations/XXXX_deploy_contract.js`)改為
 ```js
-const web3 = new Web3('/Users/flameddd/Library/Ethereum/testnet/geth.ipc', net);
+const OceanToken = artifacts.require("./OceanToken.sol");
+
+module.exports = function (deployer) {
+  // deployment steps
+  deployer.deploy(OceanToken);
+};
 ```
 
-最後
+部署到 `rinkeby` testnet
+```
+truffle migrate --reset --network rinkeby
+```
+
+contract 的部分我不熟，這邊底下的 contract 都是從範例 copy 來的
+- https://github.com/oceanprotocol/Nautilus/tree/master/3-uniswap/contracts
+
+
+記住這次部署的 `contract address`
+```
+==============================
+Deploying 'OceanToken'
+   ----------------------
+   > transaction hash:    0x9e2fbc73358cadf9e77650f46eb737f81651e213d820c563f4ab8161862e2249
+   > Blocks: 1            Seconds: 9
+   > contract address:    0x608e613c845C489fED85D3E22DD1e46FF10850C7
+   > block number:        5219285
+   > block timestamp:     1570428285
+   > account:             0xcBAB04d00E2eB9354f7b66BBc2c0D76B43Ed02d3
+   > balance:             7.027141236005765005
+   > gas used:            2378701
+   > gas price:           10 gwei
+   > value sent:          0 ETH
+   > total cost:          0.02378701 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.02378701 ETH
+```
+
+#### 填上 `account address` 跟 `contract address`
+- 修改 `src/index.js` 檔案的 **Line 17, 20** 行
+  - 分別填上 `account address` 跟 `contract address`
+
+```js
+// 我的 public account
+const addressFrom = '0xcBAB04d00E2eB9354f7b66BBc2c0D76B43Ed02d3';
+const privateKey = process.env.PRIVATE_KEY
+// 我「事前」部署用來 test 的 ERC20 contract
+const tragetContractAddress = '0xa9Ed058b081421df9C53561BB02dd2b57bD386F5'
+```
+
+### 執行
 ```
 npm start
 ```
 
-成功 connect
 
-### nodejs and contract
-先弄清楚怎麼 nodejs 怎麼呼叫 contract 吧！  
+（重複執行的話，`step1 createExchangeContract` 會 fail  
+因為 `uniswap` 針對**一個 contract 只會建立一個 exchange contract**
+後續的步驟還是會成功）  
 
-### test account
-我的 test account
-- `0xcBAB04d00E2eB9354f7b66BBc2c0D76B43Ed02d3`
+最後去
+- https://rinkeby.etherscan.io/
+
+查看 account 的 `token`，有多 `10 LINK token` 就是成功了  
+（看到 step6 的成功訊息後，可能還要稍微等一下下才能在 etherscan 看到結果）  
+- ex: https://rinkeby.etherscan.io/address/0xcBAB04d00E2eB9354f7b66BBc2c0D76B43Ed02d3
