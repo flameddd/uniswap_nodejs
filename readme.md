@@ -6,13 +6,13 @@
 - https://github.com/oceanprotocol/Nautilus/tree/master/3-uniswap
 
 ### 其他
-- uniswap 的 testnet 為 rinkeby
-- 利用 infura 去連 rinkeby
+- `uniswap` 的 testnet 為 `rinkeby`
+- 利用 `infura` 去連 `rinkeby`
 
 ### 執行方法
 #### 先下載 repo、install  
 ```
-git clone ＿＿＿＿＿＿
+git clone https://github.com/flameddd/uniswap_nodejs.git
 cd uniswap_nodejs
 npm install
 ```
